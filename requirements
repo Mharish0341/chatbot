@@ -1,6 +1,6 @@
 streamlit
-langchain
 langchain-community
+langchain
 langchain-huggingface
 langchain-google-genai
 transformers

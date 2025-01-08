@@ -8,7 +8,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import time
 
-GOOGLE_API_KEY = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
+# Load Google API key from Streamlit secrets
+GOOGLE_API_KEY = st.secrets["google"]["api_key"]
+
 FAISS_DB_PATH = r'faiss_index'
 
 @st.cache_data

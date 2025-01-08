@@ -11,7 +11,7 @@ import time
 GOOGLE_API_KEY = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
 FAISS_DB_PATH = r'faiss_index'
 
-# Load FAISS DB and Embeddings
+@st.cache_data
 def load_faiss_db():
     try:
         EMBEDDING_MODEL_NAME = "intfloat/e5-large-v2"

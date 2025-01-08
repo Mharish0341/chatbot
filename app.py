@@ -8,7 +8,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import time
 
-"GOOGLE_API_KEY" = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
+GOOGLE_API_KEY = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
 FAISS_DB_PATH = r'faiss_index'
 
 # Load FAISS DB and Embeddings
@@ -28,7 +28,7 @@ vectorstore, embeddings = load_faiss_db()
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0,
-    
+    api_key=GOOGLE_API_KEY
 )
 
 prompt_template = PromptTemplate(
@@ -99,20 +99,15 @@ def chatbot():
     user_query = st.text_input("You:", "")
 
     if user_query:
-        formatted_chat_history = "\n".join(
-            [f"User: {entry['question']}\nBot: {entry['answer']}" for entry in st.session_state.chat_history]
-        )
-
         start = time.time()
         result = qa_chain.invoke({
             "input": user_query,
-            "chat_history": formatted_chat_history,
+            "chat_history": "",
             "context": st.session_state.context
         })
         end = time.time()
 
         response = result['answer']
-        source_docs = result.get('source_documents', [])
 
         st.session_state.chat_history.append({
             "question": user_query,
@@ -122,19 +117,7 @@ def chatbot():
         st.write("### Bot:")
         st.write(response)
 
-        if source_docs:
-            st.write("#### Sources:")
-            for doc in source_docs:
-                st.write(f"- {doc.metadata.get('source', 'Unknown source')}")
-                st.session_state.context += doc.page_content
-
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
-
-    if st.session_state.chat_history:
-        with st.expander("Chat History"):
-            for entry in st.session_state.chat_history:
-                st.write(f"**You:** {entry['question']}")
-                st.write(f"**Bot:** {entry['answer']}")
 
 if __name__ == "__main__":
     chatbot()

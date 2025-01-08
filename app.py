@@ -8,8 +8,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import time
 
-os.environ["GOOGLE_API_KEY"] = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
-FAISS_DB_PATH = r'C:\Users\M.HARISH\PycharmProjects\PythonProject\faiss_index'
+"GOOGLE_API_KEY" = "AIzaSyDCGJ8vFipG2NiX59Qgs6rInyptJYWJ2QA"
+FAISS_DB_PATH = r'faiss_index'
 
 # Load FAISS DB and Embeddings
 def load_faiss_db():
@@ -27,7 +27,8 @@ vectorstore, embeddings = load_faiss_db()
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
-    temperature=0
+    temperature=0,
+    
 )
 
 prompt_template = PromptTemplate(

@@ -11,7 +11,7 @@ import time
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
 
-FAISS_DB_PATH = r'faiss_index'
+FAISS_DB_PATH = 'faiss_index'
 
 @st.cache_data
 def load_faiss_db():
@@ -27,11 +27,20 @@ def load_faiss_db():
 
 vectorstore, embeddings = load_faiss_db()
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    temperature=0,
-    api_key=GOOGLE_API_KEY
-)
+@st.cache_data
+def load_llm(api_key):
+    """
+    Load the ChatGoogleGenerativeAI LLM with the provided API key.
+    """
+    llm_instance = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        temperature=0,
+        api_key=api_key
+    )
+    return llm_instance
+
+vectorstore, embeddings = load_faiss_db()
+llm = load_llm(GOOGLE_API_KEY)
 
 prompt_template = PromptTemplate(
     template="""

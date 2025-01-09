@@ -7,8 +7,6 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import time
-import speech_recognition as sr
-import pyttsx3
 
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
@@ -41,6 +39,7 @@ def load_llm(api_key):
     )
     return llm_instance
 
+vectorstore, embeddings = load_faiss_db()
 llm = load_llm(GOOGLE_API_KEY)
 
 prompt_template = PromptTemplate(
@@ -98,46 +97,17 @@ qa_chain = create_retrieval_chain(
     combine_docs_chain=stuff_chain
 )
 
-# Function to handle real-time audio transcription
-def transcribe_realtime_audio():
-    recognizer = sr.Recognizer()
-    mic = sr.Microphone()
-
-    with mic as source:
-        st.write("🎤 Listening... Speak now.")
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-    try:
-        return recognizer.recognize_google(audio)
-    except sr.UnknownValueError:
-        return "Could not understand the audio."
-    except sr.RequestError:
-        return "Error with the speech recognition service."
-
-# Function to convert text to speech
-def speak_text(text):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
-
 # Streamlit UI
 def chatbot():
     st.title("AI Chatbot Interface")
-    st.write("Interact with the chatbot by typing or speaking your queries below.")
+    st.write("Interact with the chatbot by typing your queries below.")
 
     if 'chat_history' not in st.session_state:
         st.session_state.chat_history = []
     if 'context' not in st.session_state:
         st.session_state.context = ""
 
-    # Text input
-    user_query = st.text_input("💬 Type your query:", "")
-
-    # Real-time audio input
-    if st.button("🎙️"):
-        transcribed_query = transcribe_realtime_audio()
-        st.write(f"Transcribed Query: {transcribed_query}")
-        user_query = transcribed_query
+    user_query = st.text_input("You:", "")
 
     if user_query:
         start = time.time()
@@ -155,11 +125,8 @@ def chatbot():
             "answer": response
         })
 
-        st.write("### 🤖 Bot:")
+        st.write("### Bot:")
         st.write(response)
-
-        if st.button("🔊"):
-            speak_text(response)
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
 

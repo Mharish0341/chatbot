@@ -10,6 +10,4 @@ faiss-cpu
 numpy
 pandas
 scipy
-intfloat-e5-large-v2
 pyaudio
-espeak

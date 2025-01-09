@@ -13,7 +13,7 @@ GOOGLE_API_KEY = st.secrets["google"]["api_key"]
 
 FAISS_DB_PATH = 'faiss_index'
 
-@st.cache_data
+@st.cache_resource(show_spinner=False)
 def load_faiss_db():
     try:
         EMBEDDING_MODEL_NAME = "intfloat/e5-large-v2"
@@ -27,7 +27,7 @@ def load_faiss_db():
 
 vectorstore, embeddings = load_faiss_db()
 
-@st.cache_data
+@st.cache_resource(show_spinner=False)
 def load_llm(api_key):
     """
     Load the ChatGoogleGenerativeAI LLM with the provided API key.

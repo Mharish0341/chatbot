@@ -5,11 +5,8 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-import os
-import time
 from gtts import gTTS  # Google Text-to-Speech library for generating audio
 import tempfile
-import platform
 
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
@@ -100,25 +97,6 @@ qa_chain = create_retrieval_chain(
     combine_docs_chain=stuff_chain
 )
 
-# Function to play audio based on the platform
-def play_audio(audio_file_path):
-    """
-    Play audio file based on the operating system.
-    """
-    system_platform = platform.system()
-
-    try:
-        if system_platform == "Windows":
-            os.system(f'start {audio_file_path}')
-        elif system_platform == "Darwin":  # macOS
-            os.system(f'afplay {audio_file_path}')
-        elif system_platform == "Linux":
-            os.system(f'mpg123 {audio_file_path}')
-        else:
-            raise Exception(f"Unsupported platform: {system_platform}")
-    except Exception as e:
-        print(f"Error playing audio: {e}")
-
 # Streamlit UI
 def chatbot():
     st.title("AI Chatbot Interface")
@@ -128,6 +106,8 @@ def chatbot():
         st.session_state.chat_history = []
     if 'context' not in st.session_state:
         st.session_state.context = ""
+    if 'audio_path' not in st.session_state:
+        st.session_state.audio_path = None
 
     user_query = st.text_input("You:", "")
 
@@ -154,13 +134,15 @@ def chatbot():
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
             tts = gTTS(text=response, lang='en')
             tts.save(temp_audio.name)
-            audio_file_path = temp_audio.name
-
-        # Add emoji button to play audio
-        if st.button("🔊"):
-            play_audio(audio_file_path)
+            st.session_state.audio_path = temp_audio.name  # Save the file path for later playback
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
+
+    # Add the speaker emoji button
+    if st.session_state.audio_path and st.button("🔊"):
+        with open(st.session_state.audio_path, "rb") as audio_file:
+            audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format="audio/mp3")
 
 if __name__ == "__main__":
     chatbot()

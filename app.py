@@ -134,6 +134,9 @@ def chatbot():
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
             tts = gTTS(text=response, lang='en')
             tts.save(temp_audio.name)
+
+        # Add emoji button to play audio
+        if st.button("🔊"):
             st.audio(temp_audio.name, format="audio/mp3")
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")

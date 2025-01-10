@@ -9,6 +9,7 @@ import os
 import time
 from gtts import gTTS  # Google Text-to-Speech library for generating audio
 import tempfile
+import platform
 
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
@@ -99,7 +100,25 @@ qa_chain = create_retrieval_chain(
     combine_docs_chain=stuff_chain
 )
 
-# Streamlit UI
+# Function to play audio based on the platform
+def play_audio(audio_file_path):
+    """
+    Play audio file based on the operating system.
+    """
+    system_platform = platform.system()
+
+    try:
+        if system_platform == "Windows":
+            os.system(f'start {audio_file_path}')
+        elif system_platform == "Darwin":  # macOS
+            os.system(f'afplay {audio_file_path}')
+        elif system_platform == "Linux":
+            os.system(f'mpg123 {audio_file_path}')
+        else:
+            raise Exception(f"Unsupported platform: {system_platform}")
+    except Exception as e:
+        print(f"Error playing audio: {e}")
+
 # Streamlit UI
 def chatbot():
     st.title("AI Chatbot Interface")
@@ -139,7 +158,7 @@ def chatbot():
 
         # Add emoji button to play audio
         if st.button("🔊"):
-            os.system(f'start {audio_file_path}')  # For Windows
+            play_audio(audio_file_path)
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
 

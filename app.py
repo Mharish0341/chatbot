@@ -7,6 +7,8 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
 import time
+from gtts import gTTS  # Google Text-to-Speech library for generating audio
+import tempfile
 
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
@@ -127,6 +129,12 @@ def chatbot():
 
         st.write("### Bot:")
         st.write(response)
+
+        # Generate TTS audio using gTTS
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
+            tts = gTTS(text=response, lang='en')
+            tts.save(temp_audio.name)
+            st.audio(temp_audio.name, format="audio/mp3")
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
 

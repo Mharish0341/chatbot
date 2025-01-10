@@ -8,3 +8,4 @@ pyttsx3
 transformers
 torch
 faiss-cpu
+gTTS==2.3.2

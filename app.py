@@ -100,6 +100,7 @@ qa_chain = create_retrieval_chain(
 )
 
 # Streamlit UI
+# Streamlit UI
 def chatbot():
     st.title("AI Chatbot Interface")
     st.write("Interact with the chatbot by typing your queries below.")
@@ -134,10 +135,11 @@ def chatbot():
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_audio:
             tts = gTTS(text=response, lang='en')
             tts.save(temp_audio.name)
+            audio_file_path = temp_audio.name
 
         # Add emoji button to play audio
         if st.button("🔊"):
-            st.audio(temp_audio.name, format="audio/mp3")
+            os.system(f'start {audio_file_path}')  # For Windows
 
         st.write(f"**Retrieved in {end - start:.2f} seconds**")
 

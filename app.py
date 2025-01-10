@@ -7,6 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from gtts import gTTS  # Google Text-to-Speech library for generating audio
 import tempfile
+import time
 
 # Load Google API key from Streamlit secrets
 GOOGLE_API_KEY = st.secrets["google"]["api_key"]
